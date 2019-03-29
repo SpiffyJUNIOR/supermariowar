@@ -31,6 +31,7 @@ for:
   - emsdk activate latest
   - emsdk_env.bat
   - cd %appveyor_build_folder%
+
 cd SDL2_mixer
 mkdir build && cd build
 emconfigure ../configure \
