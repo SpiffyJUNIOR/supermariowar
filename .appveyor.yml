@@ -31,3 +31,37 @@ for:
   - emsdk activate latest
   - emsdk_env.bat
   - cd %appveyor_build_folder%
+cd SDL2_mixer
+mkdir build && cd build
+emconfigure ../configure \
+  CFLAGS="-O3 -s USE_OGG=1 -s USE_VORBIS=1" \
+  --prefix=`pwd`/../installdir \
+  --disable-sdltest --enable-shared \
+  --enable-music-ogg --disable-music-mp3 \
+  --disable-music-flac --disable-music-midi --disable-music-mod
+emmake make install
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index fb20bb5..cddfdcf 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -133,6 +133,10 @@ if (BUILD_STATIC_LIBS)
+ 	set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "YAML: Build testing and parse tools" FORCE)
+ 	set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "YAML: Build contrib stuff in library" FORCE)
+ 	add_subdirectory(dependencies/yaml-cpp-noboost)
++
++	# SDL2_mixer
++	include_directories(dependencies/SDL2_mixer/installdir/include/SDL2)
+ else()
+ 	find_package(ENet REQUIRED)
+ 	find_package(yaml-cpp REQUIRED)
+  unzip data.zip
+mkdir build_js && cd build_js
+emcmake cmake .. -DNO_NETWORK=1 -DDISABLE_SYSLIB_CHECKS=1 -DUSE_SDL2_LIBS=1
+emmake make smw
+emcc -o smw.html \
+  ./Binaries/Release/smw.bc \
+  ../dependencies/SDL2_mixer/installdir/lib/libSDL2_mixer.so \
+  -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png","bmp"]' \
+  -s USE_ZLIB=1 -s USE_OGG=1 -s USE_VORBIS=1 \
+  -s ALLOW_MEMORY_GROWTH=1 -s DISABLE_EXCEPTION_CATCHING=0 -s EXCEPTION_DEBUG=1 \
+  -O3 --preload-file ../data@data
